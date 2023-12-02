@@ -1,31 +1,26 @@
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {createAsyncThunk, createEntityAdapter, createSlice} from "@reduxjs/toolkit";
 import {client} from "../../api/client";
 
-// const initialState = [
-// 	{id: '0', name: 'Hinwah Leung'},
-// 	{id: '1', name: 'Iving'},
-// 	{id: '2', name: 'Elish'}
-// ]
 
 export const fetchUser = createAsyncThunk('users/fetchUsers', async () => {
 	const response = await client.get('/fakeApi/users')
 	return response.data
 })
 
-const initialState = []
+const usersAdapter = createEntityAdapter()
+const initialState = usersAdapter.getInitialState()
 
 const userSlice = createSlice({
 	name: 'users',
 	initialState,
 	reducers: {},
-	extraReducers(builder){
-		builder.addCase(fetchUser.fulfilled, (state, action) => {
-			// 返回值将直接替换state中原有的状态值
-			return action.payload
-		})
+	extraReducers: {
+		[fetchUser.fulfilled]: usersAdapter.setAll
 	}
 })
 
 export default userSlice.reducer
-export const selectAllUsers = state => state.users
-export const selectUserById = (state, userId) => state.users.find(user => user.id === userId)
+export const {
+	selectAll: selectAllUsers,
+	selectById: selectUserById
+} = usersAdapter.getSelectors(state => state.users)
