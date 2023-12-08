@@ -6,12 +6,12 @@ import store from './app/store'
 import { Provider } from 'react-redux'
 
 import { worker } from './api/server'
-import {fetchUser} from "./features/users/usersSlice";
+import {extendedApiSlice} from "./features/users/usersSlice";
 
 async function start() {
 	await worker.start({ onUnhandledRequest: 'bypass' })
 	
-	store.dispatch(fetchUser())
+	store.dispatch(extendedApiSlice.endpoints.getUsers.initiate())
 	
 	ReactDOM.render(
 		<React.StrictMode>

@@ -1,32 +1,38 @@
-import {useSelector} from "react-redux";
 import {Link} from "react-router-dom";
 import {PostAuthor} from "./PostAuthor";
 import {ReactionButtons} from "./ReactionButtons";
-import {selectPostById} from "./postSlice";
+import {useGetPostQuery} from "../api/apiSlice";
+import {Spinner} from "../../components/Spinner";
+import {TimeAgo} from "./TimeAgo";
 
 export const SinglePostPage = ({match}) => {
     const { postId } = match.params
-	const post = useSelector(state => selectPostById(state, postId))
-	if(!post){
-		return(
-			<section>
-				<h2>页面未找到！</h2>
-			</section>
-		)
-	}
+	const {
+		data: post,
+		isFetching,
+		isSuccess
+	} = useGetPostQuery(postId)
+	let content
 	
-	return (
-		<section>
+	// isFetching & isSuccess 属于互斥关系
+	if (isFetching) {
+		content = <Spinner text="Loading..." />
+	} else if (isSuccess) {
+		content = (
 			<article className="post">
 				<h2>{post.title}</h2>
-				<PostAuthor userId={post.user} />
-				<p className="post-list">{post.content}</p>
-				<br/>
+				<div>
+					<PostAuthor userId={post.user} />
+					<TimeAgo timestamp={post.date} />
+				</div>
+				<p className="post-content">{post.content}</p>
 				<ReactionButtons post={post} />
 				<Link to={`/editPost/${post.id}`} className="button">
 					Edit Post
 				</Link>
 			</article>
-		</section>
-	)
+		)
+	}
+	
+	return <section>{content}</section>
 }
