@@ -1,6 +1,5 @@
 import {useState} from "react";
-import {useDispatch, useSelector} from "react-redux";
-import {addNewPost} from "./postSlice";
+import {useSelector} from "react-redux";
 import {selectAllUsers} from "../users/usersSlice";
 import {useAddNewPostMutation} from "../api/apiSlice";
 
